@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
+        <!--[if lte IE 8]>
+        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" />
+        <![endif]-->
+        <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+        <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+        <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+        <link rel="stylesheet" href="/resources/demos/style.css">
+        <style>
+            html, body {
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                width: 100%;
+                font-family:'Helvetica', Arial, sans-serif;
+                font-size: 11px;
+            }
+            h1, h2 {
+                margin: 5px;
+
+                font-weight: normal;
+            }
+            p {
+                margin: 5px;
+            }
+            ul {
+                list-style:none;
+                margin: 5px;
+            }
+            ul li.p_type {
+                margin-left:-40px;
+            }
+
+            #map {
+                height: 100%;
+                width: 100%;
+            }
+            #menu {
+                border-top: 3px solid #333;
+                border-bottom: 1px solid #aaa;
+                width: 300px;
+                background-color: #fff;
+                z-index: 1;
+                position: absolute;
+                top: 80px;
+                left: 60px;
+            }
+            article {
+                background: #fff;
+            }
+            header {
+                background:#000;
+                color: #fff;
+            }
+            /*maybe columns?
+            .columns {
+                columns:100px 3;
+                -webkit-columns:100px 2; 
+                -moz-columns:100px 2; 
+            } */ 
+
+            .p_button {
+                background: #fff;
+                color: #fff;
+                cursor: pointer;
+                font-size: 14px;
+                height: 20px;
+                width: 20px;
+                border-radius: 50%;
+                border: 1px solid black;
+                text-align: center;
+                vertical-align: middle;
+                float:left;
+                margin-right:10px;
+            }
+            .p_button:hover {
+              background: #000;
+              opacity: 50%;
+            }
+            #p0 {
+                background: #fff;
+            }
+            #p1 {
+                background: #5CA2D1;
+            }
+            #p2 {
+                background: #3E7BB6;
+            }
+            #p3 {
+                background: #2E5387;
+            }
+            #p4 {
+                background: #081B47;
+            }
+            #header {
+                margin-top:5px;
+                margin-bottom:5px;
+                overflow:auto;
+                position:relative;
+            }
+            #header_left {
+              width:250px;
+            	float:left;
+            	overflow:hidden;
+            	height:30px;
+            }
+            #nav{
+                float:right;
+                margin:0;
+                padding:5px 0 0 0;
+                height:30px;
+                background:#FFF;
+            }
+            #nav ul {
+                margin:0 0 0 0px;
+                padding:0;
+                list-style:none;
+            }
+            #nav li {
+                display:inline;
+                margin:0;
+                padding:0;
+            }
+            #nav a,#header a{
+                margin:0px 10px 0px 10px;
+                text-decoration:none;
+                font-size:18px;
+                color:#444;
+            }
+            #nav a:hover{
+                color:#006699;
+            }
+
+
+
+        </style>
+        <script>
+            // EB: added this function
+            function getSQL() {
+                // The idea is that we generate the SQL based on the checked boxes
+                // rather than change the SQL only depending on the currently
+                // checked box.
+
+                // So first create a variable that will hold our SQL:
+                var sql = "SELECT * FROM nyc_schools_13_14 WHERE ";
+
+                // And for every checked checkbox in the partnership types, add to the WHERE clause:
+                var partnershipTypeWhereClauses = [];
+
+                // This selector only picks things in the element with id="partnership-types" and
+                // are inputs that are checked.
+                $('#partnership-types :input:checked').each(function () {
+                    // This is something we never talked about. There are two things going on:
+                    //  1. "partnershipTypeWhereClauses.push()" says "add this thing to the end of the list of partnershipTypeWhereClauses"
+                    //  2. "$(this).attr('id') + ' = TRUE '" gets the checkbox's id (which is the same as the 
+                    //     column name) and adds it to " = TRUE".
+                    //
+                    // So when p_beacon is checked, this adds "p_beacon = TRUE" to the partnershipTypeWhereClauses list.
+                    partnershipTypeWhereClauses.push($(this).attr('id') + ' = TRUE');
+                });
+
+                // Finally, add our WHERE clauses to the rest of our SQL statement
+                //
+                // partnershipTypeWhereClauses.join() smooshes all the things in that list together
+                // and puts whatever is in the () between them. So here you can see we are ANDing them
+                // together. You can easily change this by changing AND to OR.
+                sql = sql + partnershipTypeWhereClauses.join(' OR ');
+
+                // Logging it out to the console so you can see the resulting SQL. You should remove this.
+                console.log(sql);
+
+                // You could add other where clauses here to sql before returning it.
+                // For example, this might be a good place to add the "total partnerships" bit,
+                // so for all the partnership types above " AND p_total >= 3":
+                /*
+
+                   if ($('#p3').is(':checked')) {
+                       sql = sql + ' AND p_total >= 3';
+                   }
+
+                 */
+                // And you could add another if ... for each button.
+
+                return sql;
+            }
+
+            $(document).ready(function () {
+              var dataLayer;
+              cartodb.createVis('map', 'http://alisonjoymiller.cartodb.com/api/v2/viz/b2238d3c-d15e-11e3-bbd2-0e230854a1cb/viz.json')
+                .done(function (vis, layers) {
+                dataLayer = layers[1].getSubLayer(1);
+                });
+
+            //
+            // Partnership Number Buttons
+            //
+
+            $('#p0').click(function () {
+                dataLayer.setSQL("SELECT * FROM nyc_schools_13_14 WHERE p_total >= 0");
+              });
+            $('#p1').click(function () {
+                dataLayer.setSQL("SELECT * FROM nyc_schools_13_14 WHERE p_total >= 1");
+              });
+            $('#p2').click(function () {
+                dataLayer.setSQL("SELECT * FROM nyc_schools_13_14 WHERE p_total >= 2");
+              });
+            $('#p3').click(function () {
+                dataLayer.setSQL("SELECT * FROM nyc_schools_13_14 WHERE p_total >= 3");
+              });
+            $('#p4').click(function () {
+                dataLayer.setSQL("SELECT * FROM nyc_schools_13_14 WHERE p_total >= 4");
+              });
+
+
+            //Slider min sql: SELECT * FROM nyc_schools_13_14 WHERE d_frl_pct >= 
+            //Slider max sql: SELECT * FROM nyc_schools_13_14 WHERE d_frl_pct <= 
+            /*
+
+            //Slider for Nick
+             $(function() {
+                $("#slider-range").slider( {
+                    range: true,
+                    min: 0,
+                    max: 100,
+                    values: [ 0, 100 ],
+                    slide: function( event, ui ) {
+                        $( "#amount" ).val(ui.values[ 0 ] + "% - " + ui.values[ 1 ] + "%");
+                    }
+                });
+                $( "#amount" ).val( "$" + $( "#slider-range" ).slider( "values", 0 ) "% - " +
+                     + $( "#slider-range" ).slider( "values", 1 ) + "%" );
+            });
+
+            */
+            //
+            // Partnership Indicator Check Boxes
+            //
+            
+            // EB: added this
+            $('#partnership-types :input').change(function () {
+                // Since we are now doing the same thing for each checkbox, we can simplify it
+                // greatly. Just get the SQL using our new function (above), and set the SQL
+                // on the layer.
+                dataLayer.setSQL(getSQL());
+            });
+
+            // EB: commented this out. You can delete it.
+            /*
+            $('#p_uft_cls').click(function () {
+                dataLayer.setSQL("SELECT * FROM nyc_schools_13_14 WHERE p_uft_cls = TRUE");
+              });
+            $('#p_sbhc').click(function () {
+                dataLayer.setSQL("SELECT * FROM nyc_schools_13_14 WHERE p_sbhc = TRUE");
+              });
+            $('#p_mtf').click(function () {
+                dataLayer.setSQL("SELECT * FROM nyc_schools_13_14 WHERE p_mtf = TRUE");
+              });
+            $('#p_gps').click(function () {
+                dataLayer.setSQL("SELECT * FROM nyc_schools_13_14 WHERE p_gps = TRUE");
+              });
+            $('#p_zone_126').click(function () {
+                dataLayer.setSQL("SELECT * FROM nyc_schools_13_14 WHERE p_zone_126 = TRUE");
+              });
+            $('#p_beacon').click(function () {
+                dataLayer.setSQL("SELECT * FROM nyc_schools_13_14 WHERE p_beacon = TRUE");
+              });
+            $('#p_cas').click(function () {
+                dataLayer.setSQL("SELECT * FROM nyc_schools_13_14 WHERE p_cas = TRUE");
+              });
+            $('#p_transfer').click(function () {
+                dataLayer.setSQL("SELECT * FROM nyc_schools_13_14 WHERE p_transfer = TRUE");
+              });
+            $('#p_csig_aw').click(function () {
+                dataLayer.setSQL("SELECT * FROM nyc_schools_13_14 WHERE p_csig_aw = TRUE");
+              });
+            $('#p_csig_ap').click(function () {
+                dataLayer.setSQL("SELECT * FROM nyc_schools_13_14 WHERE p_csig_ap = TRUE");
+              });
+             */
+
+            });
+        </script>
+
+
+
+    </head>
+    <body>
+        <div id="header">
+			<div id="header_left">
+				<h1><a href=index.html>NYC Community Schools</a></h1>
+			</div>
+        	<div id="nav">
+                    <ul>
+                    <li><a href=*****>Home</a></li>
+                    <li><a href=*****>About</a></li>
+                    <li><a href=****>Methodology</a></li>
+                    </ul>
+            </div>
+        </div>
+        <div id="map"></div>
+        <div id="menu">
+        
+            <article>
+                <header>
+                    <h2>Community Schools Initiative</h2>
+                </header>
+                <p>Mayor DeBlasio has pledged to create 100 new community schools in New York City. When considering new locations, the city is best served by leveraging the best school-community partnerships that currently exist across NYC. This tool allows policy makers and interested parties to visualize which schools have the greatest density of existing partnerships across the city. Read more.</p>
+            </article>
+            
+            <article> 
+                <header>
+                    <h2>School Partnership Types</h1>
+                </header>
+                <p>Sort the map by partnership types. How best to describe OR function.</p>
+                <div class='columns'>
+                <!-- EB: added id to this ul element -->
+                <ul id="partnership-types">
+                    <li class="p_type"><input id="p_sbhc" type="checkbox"></input>School-Based Health Center (SBHC)
+                    </li>
+                    <li class="p_type"><input id="p_mtf" type="checkbox"></input>Mayor's Taskforce on Chronic Absenteeism (MTF)
+                    </li>
+                    <li class="p_type"><input id="p_gps" type="checkbox"></input>Graduate, Prepare, Succeed (GPS)
+                    </li>
+                    <li class="p_type"><input id="p_uft_cls" type="checkbox"></input>UFT Community Learning Center (UTF CLS)
+                    </li>
+                    <li class="p_type"><input id="p_zone_126" type="checkbox"></input>Zone 126
+                    </li>
+                    <li class="p_type"><input id="p_beacon" type="checkbox"></input>Beacon Program
+                    </li>
+                    <li class="p_type"><input id="p_cas" type="checkbox"></input>Full Service Children's Aid Society School (CAS)
+                    </li>
+                    <li class="p_type"><input id="p_transfer" type="checkbox"></input>DOE Transfer School
+                    </li>
+                    <li class="p_type"><input id="p_csig_aw" type="checkbox"></input>Community Schools Initiative Grant (Awarded)
+                    </li>
+                    <li class="p_type"><input id="p_csig_ap" type="checkbox"></input>Community Schools Initiative Grant (Applied)
+                    </li>
+                </ul>
+                </div>
+            </article>
+            <article>
+                <header>
+                    <h2>Total School Partnerships</h1>
+                </header>
+                <p>Show schools with at least the following number of existing partnerships.</p>
+                
+                <div style="overflow:hidden">
+                    <div id="p0" class="p_button">
+                    0
+                    </div>
+                    <div id="p1" class="p_button">
+                    1
+                    </div>
+                    <div id="p2" class="p_button">
+                    2
+                    </div>
+                    <div id="p3" class="p_button">
+                    3
+                    </div>
+                    <div id="p4" class="p_button">
+                    4
+                    </div>
+                </div>
+
+            </article>
+            <article>
+                <header>
+                    <h2>Need Indicator</h1>
+                </header>
+                <p>This is a slider. Hopefully. 
+                </p>
+                <p>
+                    <label for="amount">Percent Free and Reduced Lunch:</label>
+                    <input type="text" id="amount" style="border:0; color:#f6931f; font-weight:bold;">
+                </p>
+                <div id="slider-range"></div>
+            </article>
+            <!---
+            <article>
+                <header>
+                    <h2>Layers</h1>
+                </header>
+                <p>This is where I want to add a dropdown to select layers to display council districts, promise zones, etc. 
+                </p>
+                <select id="polygons">
+                    <option>Just Schools</option>
+                    <option>School Districts</option>
+                    <option>Promise Neighborhoods</option>
+            </article>
+            ---> 
+        </div>
+    </body>
+</html>
