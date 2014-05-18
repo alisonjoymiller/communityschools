@@ -1,0 +1,10 @@
+body {
+font-weight:bold;
+font-size:20px;
+}
+
+#mydiv {
+border:2px solid black;
+font-family:helvetica;
+font-size:30px;
+}
