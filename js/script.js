@@ -25,6 +25,25 @@ $(function() {
     		});
     		
     		
+$( "#aboutlink" ).click(function() {
+  $( "#menu" ).fadeTo(500,0);
+  $( "#methodology" ).fadeTo(500,0);
+  $("#about").fadeTo(500,1);
+});
+
+$( "#homelink" ).click(function() {
+  $( "#menu" ).fadeTo(500,1);
+  $( "#methodology" ).fadeTo(500,0);
+  $("#about").fadeTo(500,0);
+});
+	
+$( "#methodologylink" ).click(function() {
+  $( "#menu" ).fadeTo(500,0);
+  $( "#methodology" ).fadeTo(500,1);
+  $("#about").fadeTo(500,0);
+});
+	
+	
 // EB: added this function
             function getSQL() {
                 // The idea is that we generate the SQL based on the checked boxes
