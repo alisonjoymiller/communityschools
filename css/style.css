@@ -41,25 +41,7 @@ ul li.p_type {
 	left: 10px;
 }
 
-#about {
-	display:none;
-	width: 320px;
-	background-color: #fff;
-	z-index: 1;
-	position: absolute;
-	top: 55px;
-	left: 10px;
-}
 
-#methodology {
-	display:none;
-	width: 320px;
-	background-color: #fff;
-	z-index: 1;
-	position: absolute;
-	top: 55px;
-	left: 10px;
-}
 article {
 	background: #fff;
 }
