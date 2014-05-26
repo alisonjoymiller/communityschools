@@ -765,7 +765,7 @@ button.ui-button::-moz-focus-inner {
 .ui-tabs .ui-tabs-panel {
 	display: block;
 	border-width: 0;
-	padding: 1em 1.4em;
+	padding: 0;
 	background: none;
 }
 .ui-tooltip {
@@ -802,12 +802,12 @@ body .ui-tooltip {
 	color: #000;
 }
 .ui-widget-content a {
-	color: #000;
+	color: #2E5387;
 }
 .ui-widget-header {
-	border: 1px solid #000;
+	/*border: 1px solid #000;
 	background: #000 url("images/ui-bg_highlight-soft_20_000_1x100.png") 50% 50% repeat-x;
-	color: #fff;
+	color: #fff;*/
 	font-weight: bold;
 }
 .ui-widget-header a {
@@ -855,15 +855,15 @@ body .ui-tooltip {
 .ui-state-active,
 .ui-widget-content .ui-state-active,
 .ui-widget-header .ui-state-active {
-	border: 1px solid #000;
-	background: #ffffff url("images/ui-bg_inset-soft_65_ffffff_1x100.png") 50% 50% repeat-x;
+	border: 0px solid #000;
+	background: #2E5387;
 	font-weight: normal;
-	color: #000;
+	color: #fff;
 }
 .ui-state-active a,
 .ui-state-active a:link,
 .ui-state-active a:visited {
-	color: #000;
+	color: #fff;
 	text-decoration: none;
 }
 
