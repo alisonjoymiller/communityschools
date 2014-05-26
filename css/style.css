@@ -11,6 +11,7 @@ h1 {
 	margin: 5px;
 	font-weight: normal;
 	text-transform: uppercase;
+	font-size: 18px;
 }
 h2 {
 	margin: 5px;
@@ -50,7 +51,9 @@ a {
 	top: 10px;
 	left: 10px;
 }
-
+#header {
+	margin: 0px 0px 10px 5px;
+}
 
 article {
 	background: #fff;
