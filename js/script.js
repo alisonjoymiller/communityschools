@@ -24,7 +24,9 @@ $(function() {
     		});
     		});
     		
-    		
+$(function() {
+	$("#tabs").tabs();
+});
 	
 	
 // EB: added this function
