@@ -52,7 +52,8 @@ a {
 	left: 10px;
 }
 #header {
-	margin: 0px 0px 10px 5px;
+	margin: 0px 5px 10px 5px;
+	border-bottom: 1px solid #aaa;
 }
 
 article {
@@ -119,7 +120,7 @@ header {
 #nav{
 	float:left;
 	width: 320px;
-	margin:0px 10px 10px 0px;
+	margin:0px 10px 0px 0px;
 	padding:0px 0 0 0;
 	height:30px;
 	background:#FFF;
@@ -137,7 +138,7 @@ header {
 #nav a,#header a{
 	margin:10px 10px 10px 10px;
 	text-decoration:none;
-	font-size:18px;
+	font-size:16px;
 	color:#444;
 }
 #nav a:hover{
