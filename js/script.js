@@ -10,7 +10,7 @@ $(document).ready(function () {
                 })
                 .done(function (vis, layers) {
                 dataLayer = layers[1].getSubLayer(1);
-                $("#map").css("max-height","92%");
+               /* $("#map").css("max-height","92%");*/
                 });    
    
     $(function() {
