@@ -162,3 +162,6 @@ div.cartodb-legend-stack {
 #tabs ul {
 	border-bottom: 1px solid #000;
 }
+.ui-slider-range {
+	background: #2E5387;
+}
