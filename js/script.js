@@ -10,7 +10,7 @@ $(document).ready(function () {
                 })
                 .done(function (vis, layers) {
                 dataLayer = layers[1].getSubLayer(1);
-               /* $("#map").css("max-height","92%");*/
+                dataLayer.setSQL("SELECT * FROM nyc_schools_13_14 WHERE p_total >= 1");
                 });    
    
     $(function() {
@@ -75,6 +75,17 @@ $(function() {
                 return sql;
             }
 
+
+            function getSliderSQL () {
+                var frl_vals = $("#slider-range").slider("option","values");
+                var chronic_vals = $("#slider-range2").slider("option","values");
+                var sql1 = "SELECT * FROM nyc_schools_13_14 WHERE d_frl_pct >="+frl_vals[0]+" AND "+"d_frl_pct <="+frl_vals[1];
+                var sql2 = " AND d_chronic >=" + chronic_vals[0]+" AND d_chronic <="+chronic_vals[1]; 
+
+                return sql1+sql2;
+
+            }
+
             //
             // Partnership Number Buttons
             //
@@ -103,12 +114,24 @@ $(function() {
                     max: 100,
                     values: [ 0, 100 ],
                     slide: function( event, ui ) {
-                        $( "#amount" ).val(ui.values[ 0 ] + "% - " + ui.values[ 1 ] + "%");
-                        dataLayer.setSQL("SELECT * FROM nyc_schools_13_14 WHERE d_frl_pct >="+ui.values[0]+" AND "+"d_frl_pct <="+ui.values[1]);
+                        $( "#frl_amount" ).val(ui.values[ 0 ] + "% - " + ui.values[ 1 ] + "%");
+                        dataLayer.setSQL(getSliderSQL());
                     }
                 });
                 $("#amount").val($("#slider-range").slider("values",0)+"%-"+ $("#slider-range").slider("values",1)+"%");
                 
+                $("#slider-range2").slider( {
+                    range: true,
+                    min: 0,
+                    max: 100,
+                    values: [0,100],
+                    slide: function( event, ui ) {
+                        $( "#chronic_amount" ).val(ui.values[ 0 ] + "% - " + ui.values[ 1 ] + "%");
+                        dataLayer.setSQL(getSliderSQL());
+                    }
+                });
+
+
             });
             //
             // Partnership Indicator Check Boxes
